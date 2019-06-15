@@ -1,0 +1,21 @@
+
+player missiles
+	3 anti-missile batteries, 10 missiles each = 30 total
+	click to launch missiles
+	keep track of number of missiles
+	remove missiles when fired
+	add missiles when on next level
+
+enemy missiles
+	randomly launch missiles from top of screen
+	more missiles are launched and at faster speeds with each level
+	if missile hits a battery, you lose all those missiles
+	if missile hits city, that city is gone
+
+cities
+	6 cities
+	the game ends when all cities are destroyed
+
+scoring
+	earn points for every enemy missile destroyed
+	bonus points for unused missiles and protected cities
