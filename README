@@ -19,3 +19,18 @@ cities
 scoring
 	earn points for every enemy missile destroyed
 	bonus points for unused missiles and protected cities
+
+
+game state order:
+click to start game
+enemy missiles start falling
+if missile hits city, remove city, remove missile
+
+click to fire missile in location of mouse click
+if missile hits enemy missile, remove missile and enemy missile
+
+collections:
+anti-missile battery contains 10 missiles
+player missiles inherits missile
+enemy missiles inherits missile
+cities

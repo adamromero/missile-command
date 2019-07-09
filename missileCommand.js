@@ -3,79 +3,106 @@ const missileCommand = (() => {
 	let canvas = document.getElementById("canvas"),
 		ctx = canvas.getContext("2d"),
 		cities = [], timer, x = 0, y = 0,
-		playerMissiles = [];
+		playerMissiles = [],
+		enemyMissiles = [];
 
 	const CANVAS_WIDTH = canvas.width,
 		  CANVAS_HEIGHT = canvas.height;
 
+	//city
 	function City(x, y) {
 		this.x = x;
 		this.y = y;
-		this.active = true;
+		this.destroyed = false;
 
-		const draw = () => {
+		this.draw = () => {
 			let x = this.x,
         		y = this.y;
 
 		    ctx.fillStyle = 'cyan';
 		    ctx.beginPath();
-		    ctx.moveTo( x, y );
-		    ctx.lineTo( x, y - 10 );
-		    ctx.lineTo( x + 10, y - 10 );
-		    ctx.lineTo( x + 15, y - 15 );
-		    ctx.lineTo( x + 20, y - 10 );
-		    ctx.lineTo( x + 30, y - 10 );
-			ctx.lineTo( x + 30, y );
+		    ctx.moveTo(x, y);
+		    ctx.lineTo(x, y - 10);
+		    ctx.lineTo(x + 10, y - 10);
+		    ctx.lineTo(x + 15, y - 15);
+		    ctx.lineTo(x + 20, y - 10);
+		    ctx.lineTo(x + 30, y - 10);
+			ctx.lineTo(x + 30, y);
 			ctx.closePath();
 		    ctx.fill();
 		}
-
-		return { x, y, draw };
 	};
 
-	function Missile(options) {  
+	//player missile
+	function PlayerMissile(x, y) {
+		this.x = x;
+		this.y = y;
+		this.dx = 400;
+		this.dy = 570;
 
-	};
+		this.fireMissile = (x, y) => {
+			console.log('player missile fired: ' + x + ", " + y);
+			//playerMissile.pop();
+			//playerMissiles.pop();
+		}
 
-	Missile.prototype.draw = function() {
-		console.log('draw function');
-	};
-
-	function PlayerMissile() {
-
+		this.draw = () => {
+			ctx.strokeStyle = "blue";
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(this.dx, this.dy);
+			ctx.stroke();
+			ctx.fillStyle = "white";
+			ctx.fillRect(this.x - 1, this.y - 1, 2, 2);
+		}
 	}
 
-	PlayerMissile.prototype = Object.create(Missile.prototype);
-	PlayerMissile.prototype.constructor = PlayerMissile;
+	//enemy missile 
+	function EnemyMissile(x, y) {
+		this.x = x;
+		this.y = y;
+		this.dx = x;
+		this.dy = y;
+
+		this.draw = () => {
+			ctx.strokeStyle = "red";
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(this.dx, this.dy);
+			ctx.stroke();
+			ctx.fillStyle = "white";
+			ctx.fillRect(this.dx, this.dy, 2, 2);
+			this.dx += 1;
+			this.dy += 1;
+		}
+	}
 
 	const fireMissile = (x, y) => {
-		console.log('player missile fired: ' + x + ", " + y);
-		//playerMissile.push(new PlayerMissile());
-	}
-
-	function EnemyMissile() {
-		
+		console.log(x + " " + y);
+		playerMissiles.push(new PlayerMissile(x, y));
 	}
 
 	const renderPlayerMissiles = () => {
-		playerMissiles.forEach(function(missile) {
-			missile.draw();
-		})
+		playerMissiles.forEach(missile => missile.draw());
+	}
+
+	const renderEnemyMissiles = () => {
+		enemyMissiles.forEach(missile => missile.draw());
 	}
 
 	let drawMessage = () => {
 		ctx.fillStyle = "blue";
 		ctx.font = "bold 20px arial";
-		ctx.fillText("CLICK TO START", 315, 180);
+		ctx.fillText("HIT SPACEBAR TO START", 280, 180);
 		ctx.fillStyle = "red";
 		ctx.fillText('DEFEND', 285, 355);
 		ctx.fillText('CITIES', 435, 355);
 	}
 
 	const renderCities = () => {
-		cities.forEach(function(city) {
-			city.draw();
-		})
+		cities.forEach(city => city.draw());
 	}
 
 	const renderBackground = () => {
@@ -94,6 +121,7 @@ const missileCommand = (() => {
 		renderBackground();
 		renderCities();
 		renderPlayerMissiles();
+		renderEnemyMissiles();
 		/*
 		renderAntiMissiles();
 		renderScore();
@@ -120,8 +148,10 @@ const missileCommand = (() => {
 		cities.push(new City(380, 580));
 		cities.push(new City(580, 580));
 
-		playerMissiles.push(new PlayerMissile());
-		playerMissiles.push(new PlayerMissile());
+		enemyMissiles.push(new EnemyMissile(60, 0));
+		enemyMissiles.push(new EnemyMissile(500, 0));
+		enemyMissiles.push(new EnemyMissile(80, 0));
+		enemyMissiles.push(new EnemyMissile(200, 0));
 
 
 		console.log("missile command init");
@@ -135,13 +165,17 @@ const missileCommand = (() => {
 	}
 
 	const initEventListeners = () => {
-		canvas.addEventListener("click", function() {
-			startLoop();
+		document.addEventListener("keydown", function(e) {
+			if (e.key === ' ') {
+				startLoop();
+			}
 			
 			canvas.addEventListener("click", function(e) {
-				fireMissile(e.pageX, e.pageY);
+				console.log(e)
+				console.log(this.offsetLeft);
+				fireMissile(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
 			})
-		});
+		}, { once: true });
 	}
 
 	return {
